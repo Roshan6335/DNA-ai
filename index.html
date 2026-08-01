@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>DNA.AI — Your Personal Assistant</title>
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- ============ SCREEN 1: WELCOME ============ -->
+  <section id="screen-welcome" class="screen active">
+    <div class="face-stage">
+      <div class="scan-brackets">
+        <span class="bracket tl"></span>
+        <span class="bracket tr"></span>
+        <span class="bracket bl"></span>
+        <span class="bracket br"></span>
+      </div>
+      <div id="face-three-mount" class="three-mount"></div>
+      <span class="scan-dot"></span>
+    </div>
+    <h1 class="status-text">Welcome to <span class="brand">DNA.AI</span></h1>
+  </section>
+
+  <!-- ============ SCREEN 2: FACE AUTH ============ -->
+  <section id="screen-auth" class="screen">
+    <div class="face-stage">
+      <div class="scan-brackets active-scan">
+        <span class="bracket tl"></span>
+        <span class="bracket tr"></span>
+        <span class="bracket bl"></span>
+        <span class="bracket br"></span>
+      </div>
+      <video id="webcam" autoplay muted playsinline></video>
+      <canvas id="overlay-canvas"></canvas>
+      <span class="scan-dot pulse"></span>
+    </div>
+    <h1 id="auth-status" class="status-text">Ready for Face Authentication</h1>
+    <p id="auth-substatus" class="sub-text"></p>
+    <p class="disclosure">For your security, this attempt may be logged as a single photo.</p>
+  </section>
+
+  <!-- ============ SCREEN 3: MAIN ASSISTANT ============ -->
+  <section id="screen-assistant" class="screen">
+    <div class="orb-stage">
+      <div id="orb-three-mount" class="three-mount"></div>
+      <canvas id="wave-canvas" width="360" height="120"></canvas>
+    </div>
+
+    <p id="assistant-caption" class="status-text small">Ask me Anything</p>
+
+    <div class="input-bar">
+      <input id="user-input" type="text" placeholder="Ask me anything..." autocomplete="off" />
+      <button id="mic-btn" title="Speak">
+        <svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M12 14a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v5a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-3.08A7 7 0 0 0 19 11h-2z"/></svg>
+      </button>
+    </div>
+
+    <div id="chat-log" class="chat-log"></div>
+  </section>
+
+  <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.min.js"></script>
+  <script src="js/face.js"></script>
+  <script src="js/orb.js"></script>
+  <script src="js/voice.js"></script>
+  <script src="js/memory.js"></script>
+  <script src="js/brain.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

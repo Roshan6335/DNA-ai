@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>DNA.AI — Security Log</title>
+<link rel="stylesheet" href="css/style.css" />
+<style>
+  html, body { overflow: auto; height: auto; }
+  .admin-wrap { max-width: 900px; margin: 0 auto; padding: 32px 20px; text-align: left; }
+  .admin-wrap h2 { color: var(--cyan); margin-bottom: 20px; }
+  .gate { display: flex; gap: 10px; flex-wrap: wrap; }
+  .gate input {
+    background:#081116; border:1px solid var(--border); border-radius:8px;
+    padding:10px 14px; color:var(--text); outline:none; font-size:0.9rem; min-width:200px;
+  }
+  .gate button {
+    padding:10px 18px; border-radius:8px; border:none;
+    background:var(--cyan); color:#00201d; font-weight:600; cursor:pointer;
+  }
+  .gate-error { color: var(--red); margin-top: 10px; font-size: 0.85rem; }
+  .grid {
+    display:grid; grid-template-columns:repeat(auto-fill, minmax(150px, 1fr));
+    gap:16px; margin-top:28px;
+  }
+  .card { background:var(--panel); border:1px solid var(--border); border-radius:12px; overflow:hidden; }
+  .card img { width:100%; height:130px; object-fit:cover; display:block; background:#000; }
+  .card .meta { padding:8px 10px; font-size:0.72rem; }
+  .card .meta .time { color: var(--sub); }
+  .card .meta .badge.match { color: var(--cyan); }
+  .card .meta .badge.no-match { color: var(--red); }
+  .empty { color: var(--sub); margin-top: 20px; }
+</style>
+</head>
+<body>
+  <div class="admin-wrap">
+    <h2>DNA.AI — Security Log</h2>
+    <p class="sub-text" style="margin-bottom:16px;">Every face-auth attempt logs one still photo here (not a recording).</p>
+
+    <div id="gate" class="gate">
+      <input id="passcode" type="password" placeholder="Admin passcode" />
+      <button id="unlock-btn">Unlock</button>
+    </div>
+    <p id="gate-error" class="gate-error"></p>
+
+    <div id="grid" class="grid hidden"></div>
+    <p id="empty-msg" class="empty hidden">No attempts logged yet.</p>
+  </div>
+
+  <script>
+    const gate = document.getElementById('gate');
+    const grid = document.getElementById('grid');
+    const emptyMsg = document.getElementById('empty-msg');
+    const errEl = document.getElementById('gate-error');
+
+    async function unlock() {
+      const passcode = document.getElementById('passcode').value;
+      errEl.textContent = '';
+      try {
+        const res = await fetch(`/api/admin-logs?passcode=${encodeURIComponent(passcode)}`);
+        const data = await res.json();
+        if (!res.ok) {
+          errEl.textContent = data.error || 'Failed to unlock';
+          return;
+        }
+        gate.classList.add('hidden');
+        if (!data.logs.length) {
+          emptyMsg.classList.remove('hidden');
+          return;
+        }
+        grid.classList.remove('hidden');
+        data.logs.forEach((log) => {
+          const card = document.createElement('div');
+          card.className = 'card';
+          const badgeClass = log.matched ? 'match' : 'no-match';
+          const badgeText = log.matched ? 'Matched' : 'No match';
+          card.innerHTML = `
+            <img src="${log.image || ''}" alt="attempt snapshot" />
+            <div class="meta">
+              <div class="time">${new Date(log.created_at).toLocaleString()}</div>
+              <div class="badge ${badgeClass}">${badgeText}</div>
+            </div>`;
+          grid.appendChild(card);
+        });
+      } catch (e) {
+        errEl.textContent = 'Network error — try again.';
+      }
+    }
+
+    document.getElementById('unlock-btn').addEventListener('click', unlock);
+    document.getElementById('passcode').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') unlock();
+    });
+  </script>
+</body>
+</html>
